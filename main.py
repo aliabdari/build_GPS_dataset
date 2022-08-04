@@ -8,9 +8,16 @@ for file in os.listdir("./cabspottingdata"):
         print(os.path.join("/cabspottingdata", file))
         list_files.append('./cabspottingdata' + os.sep + file)
 
-if os.path.exists("data.txt"):
-    os.remove("data.txt")
-data_file = open("data.txt", "w")
+if os.path.exists("GPS_data.txt"):
+    os.remove("GPS_data.txt")
+data_file = open("GPS_data.txt", "w")
+
+
+def check_boundaries(listX, listY, d):
+    if 37.0 <= float(listX[d]) and float(listX[d + 1]) and float(listX[d + 2]) < 38.0:
+        if -123.0 < float(listY[d]) and float(listY[d + 1]) and float(listY[d + 2]) <= 122.0:
+            return True
+
 
 for file in list_files:
     with open(file) as f:
@@ -26,12 +33,13 @@ for file in list_files:
         differences = [x - list_time_stamp[i - 1] for i, x in enumerate(list_time_stamp)][1:]
         for d in range(len(differences) - 1):
             if 55 < differences[d] < 65 and 55 < differences[d + 1] < 65:
-                data_file.write(list_x[d] + "," + list_y[d])
-                data_file.write(",")
-                data_file.write(list_x[d+1] + "," + list_y[d+1])
-                data_file.write(",")
-                data_file.write(list_x[d+2] + "," + list_y[d+2])
-                data_file.write("\n")
+                if check_boundaries(list_x, list_y, d):
+                    data_file.write(list_x[d] + "," + list_y[d])
+                    data_file.write(",")
+                    data_file.write(list_x[d + 1] + "," + list_y[d + 1])
+                    data_file.write(",")
+                    data_file.write(list_x[d + 2] + "," + list_y[d + 2])
+                    data_file.write("\n")
     print("one file finished")
 data_file.close()
 
